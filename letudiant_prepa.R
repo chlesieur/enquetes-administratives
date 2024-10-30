@@ -5,7 +5,7 @@ library(stringr)
 ### Cette partie serait utile si on gardait le num_candidat dans pamplemousse
 
 # il faur transformer le base pamplemousse en UTF en modifiant enregistrer sous dans excel
-base_pamplemousse <- read.csv2("export_pamplemousse.csv", encoding = "UTF-8")
+base_pamplemousse <- read.csv2("data/export_pamplemousse.csv", encoding = "UTF-8")
 
 ### Détermination du périmètre (admis en 1A, concours externe, concours 2024)
 base_pamplemousse_1A <- base_pamplemousse %>%
@@ -18,17 +18,19 @@ base_pamplemousse_1A_concours_externe_2024 <- base_pamplemousse_1A_concours_exte
   dplyr::filter(str_starts(concours_annee, "2024"))
 
 # ### Lecture des fichiers des inscriptions
-BL_attache <- read_excel("Inscription_attache_BL.xls", skip = 1, col_names = TRUE)
-BL_ingenieur <- read_excel("Inscription_ingenieur_BL.xls",skip = 1, col_names = TRUE)
+maths <- read_excel("data/Inscription_maths.xlsx", skip = 1, col_names = TRUE)
 
-D2_attache <- read_excel("Inscription_attaché_D2.xls",skip = 1, col_names = TRUE)
-D2_ingenieur <- read_excel("Inscription_ingenieur_D2.xls",skip = 1, col_names = TRUE)
+BL_attache <- read_excel("data/Inscription_attache_BL.xls", skip = 1, col_names = TRUE)
+BL_ingenieur <- read_excel("data/Inscription_ingenieur_BL.xls",skip = 1, col_names = TRUE)
+
+D2_attache <- read_excel("data/Inscription_attaché_D2.xls",skip = 1, col_names = TRUE)
+D2_ingenieur <- read_excel("data/Inscription_ingenieur_D2.xls",skip = 1, col_names = TRUE)
 
 inscris <- rbind(maths,BL_ingenieur,BL_attache,D2_attache,D2_ingenieur)
 
 ### Sélection des Admis dans les fichiers sous Z:/
 
-admis <- read_excel("Admis.xlsx") %>% rename(CODE_CANDIDAT = admis)
+admis <- read_excel("data/Admis.xlsx") %>% rename(CODE_CANDIDAT = admis)
 
 admis_unique <- unique(admis)
 
