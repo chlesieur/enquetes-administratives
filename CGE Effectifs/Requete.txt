@@ -1,0 +1,67 @@
+  
+SELECT 		
+GROUP_CONCAT(DISTINCT v.lib ORDER BY v.ordre) AS lib_voie,
+v.id_voie AS id_voie,
+v.libelle AS libelle_voie,
+e.precision_scolarite,
+e.id_etudiant,
+e.nom,
+e.prenom_etat_civil,
+e.prenom,
+e.bea_ine,
+e.prenom_suite,
+e.libelle_etat_civil,
+e.datenai,
+e.id_nationalite,
+nat.libelle as libelle_nationalite,
+e.libelle_statut_etudiant,
+e.annee_entree_enssupfr,
+e.admin_sit_precedente,
+e.bourse_org_attribution,
+e.bourse_org_gestionnaire,
+e.type_bourse,
+e.bourse_montant,
+e.bourse_numero,
+e.periode_etranger,
+e.lib_voie_candidat,
+e.sde_etablissement,
+e.diplome_autre1,
+e.diplome_double1,
+e.diplome_autre2,
+e.diplome_double2,
+e.diplome_autre3,
+e.diplome_double3,
+e.diplome_autre4,
+e.diplome_double4,
+e.diplome_autre5,
+e.diplome_double5,
+e.etablissement_etranger,
+e.site_etranger,
+e.id_ref_dernier_diplome,
+e.id_ref_situation_pre,
+e.id_ref_cpge,
+e.id_ref_niv_form,
+IF(e.accord_8=1,'oui','non') AS demande_bourse,
+e.accord_8_estampille AS demande_bourse_estampille,
+ROUND(aide_paiement.montant_paiement,2) AS montant_paiement
+FROM etudiant e 
+LEFT JOIN voie_etudiant AS ve ON (ve.id_etudiant=e.id_etudiant)
+LEFT JOIN voie AS v ON (ve.id_voie=v.id_voie)
+LEFT JOIN nationalite nat ON (nat.id_nationalite=e.id_nationalite)
+
+LEFT JOIN ( 
+  SELECT 
+    id_etudiant,
+    SUM(montant_paiement) AS montant_paiement
+  FROM frais_reglement
+  WHERE temoin_ok=1
+  GROUP BY id_etudiant
+) aide_paiement ON (aide_paiement.id_etudiant=e.id_etudiant)
+
+WHERE e.temoin_etudiant='1'
+GROUP BY e.id_etudiant
+ORDER BY 
+  lib_voie, 
+  e.nom, 
+  e.prenom, 
+  e.id_etudiant

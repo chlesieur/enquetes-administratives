@@ -1,0 +1,10 @@
+Effectifs
+Filtrages successifs sur extraction Pamplemousse
+Nationalité : Française = 265 donc <> 265 => étrangers
+Masters : On comptabilise Master formation initiale et NB Cursus (1ere colonne = 2)
++ Master formation continue
+ + analyste, Master STD, formation initiale + les MSSD
+
+Fichier des diplômés donné par DCRE (P. Gandubert) mais manque nationalité.
+
+=> ecriture spécifications pour V. Chrétien

@@ -11,13 +11,13 @@ colnames(base_pamplemousse)[1] <- "lib_voie"
 
 ### Détermination du périmètre (admis en 1A, concours externe, concours 2024)
 
-base_pamplemousse_1A <- base_pamplemousse %>%
-  dplyr::filter(str_starts(lib_voie, "1A,1A"))
+# base_pamplemousse_1A <- base_pamplemousse %>%
+#   dplyr::filter(str_starts(lib_voie, "1A,1A"))
+# 
+# base_pamplemousse_1A_concours_externe <- base_pamplemousse_1A %>%
+#   dplyr::filter(str_starts(concours_origine, "Concours externe"))
 
-base_pamplemousse_1A_concours_externe <- base_pamplemousse_1A %>%
-  dplyr::filter(str_starts(concours_origine, "Concours externe"))
-
-base_pamplemousse_1A_concours_externe_2024 <- base_pamplemousse_1A_concours_externe %>%
+base_pamplemousse_2024 <- base_pamplemousse %>%
   dplyr::filter(str_starts(concours_annee, "2024"))
 
 # ### Lecture des fichiers des inscriptions
@@ -43,12 +43,19 @@ admis <- left_join(admis_unique,inscris, by ="CODE_CANDIDAT")
 
 admis_unique <- admis[!duplicated(admis$CODE_CANDIDAT),]
 
+### Statistique par voie d'admission
+
+
+
+
 ### Statistique par filière
 
-library(dplyr)  # Assuming you're already using dplyr
+library(dplyr)  
 library(stringr)
 
 admis_unique$SERIE
+
+admis_unique <- admis_unique %>% filter(statut=="Ing")
 
 
 admis_unique_hors_bacheliers_etrangers <- admis_unique %>%
@@ -63,12 +70,16 @@ avant_reforme_2021 <- admis_unique_hors_bacheliers_etrangers %>%
   group_by(MENTION, type_bac) %>% 
   summarise(effectif = n())
 
+avant_reforme_2021
+
 apres_reforme_2021_physique_chimie <- admis_unique_hors_bacheliers_etrangers %>% 
   filter(SERIE == "BAC Général  (réforme 2021)",
          SPECIALITE_BAC_TERMINALE1 %in% c("Mathématiques","Physique-Chimie") & 
          SPECIALITE_BAC_TERMINALE2 %in% c("Mathématiques","Physique-Chimie")) %>% 
   group_by(MENTION) %>% 
   summarise(effectif = n())
+
+apres_reforme_2021_physique_chimie
 
 maths_sciences_exactes_defi <- c("Mathématiques", "Physique-Chimie", "Numérique et sciences informatiques", "Science de l'Ingénieur (Sous-Épreuves)")
 shs_defi <- c("Sciences économiques et sociales","Hist.-Géo. géopolitique & sc.Politiques","Humanités, littérature et philosophie","Langues, litt. & cult. étrang. & région.","Hist.-Géo. géopolitique & sc.Politiques")

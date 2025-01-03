@@ -1,0 +1,147 @@
+SELECT
+distinct
+  CONCAT('0',RIGHT(e.concours_annee,2),'-',e.id_active_directory) AS NUMINS,
+  e.bea_ine AS IDETU,
+  '0352480F' AS COMPOS,
+  'O' AS INSPR,
+  '10' AS REGIME,
+  DAY(e.datenai) AS JONAIS,
+  MONTH(e.datenai) AS MOINAIS,
+  YEAR(e.datenai) AS ANNAIS,
+  CASE e.libelle_etat_civil
+    WHEN 'Monsieur' then 1
+    WHEN 'Madame' then 2
+    WHEN 'Mademoiselle' then 2
+    ELSE LEFT(e.secu_num,1)
+  END 
+  AS SEXE,
+  UCASE(bac.lib) AS BAC,
+  aca.code_sise AS ACABAC,
+  e.bac_annee AS ANBAC,
+  UCASE(sp.lib) AS SITUPRE,
+  UCASE(dd.lib) AS DIPDER,
+  IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) WHERE v.lib='Licence Eco'),'16','00')
+  AS CURPAR,
+  nat.code3 AS NATION,
+CASE WHEN e.id_etudiant IN (
+    SELECT DISTINCT id_etudiant
+    FROM voie_etudiant ve
+    LEFT JOIN voie v ON v.id_voie = ve.id_voie
+    WHERE v.lib = 'Césure'
+) THEN '' ELSE e.pays END AS PARIPA,
+   regexp_replace(e.code_postal_ville, '^\s*(\d\s*){5}\D*$', '\1') AS CP_ETU,
+CASE WHEN e.id_etudiant IN (
+    SELECT DISTINCT id_etudiant
+    FROM voie_etudiant ve
+    LEFT JOIN voie v ON v.id_voie = ve.id_voie
+    WHERE v.lib = 'Césure'
+) THEN '' ELSE e.id_ref_parent_pays END AS PAYPAR,
+  IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) WHERE v.lib='Césure'),'99999',LEFT(e.code_postal_ville,5)) 
+  AS CP_PAR_A_COMPLETER_EGAL_CP_ETU,
+  CASE LCASE(e.parent_qualite)
+    WHEN 'mere' THEN e.id_pcs_mere
+    WHEN 'mère' THEN e.id_pcs_mere
+    WHEN 'mére' THEN e.id_pcs_mere
+    WHEN 'mme' THEN e.id_pcs_mere
+    WHEN 'madame' THEN e.id_pcs_mere
+    ELSE e.id_pcs_pere
+  END 
+  AS PCSPAR_REMPLACER_0_PAR_99,
+  IF (e.libelle_statut_etudiant='erasmus','8','0') AS ECHANG,
+CASE 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%ATT%') THEN 9092442 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%ING%') THEN 6000577 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%DOCT%') THEN 4200001 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%MS Datascience%') THEN 9075642 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%MSD%') THEN 2500163 
+        WHEN  UPPER(group_concat(v.lib)) LIKE UPPER('%Publique') THEN 2500163 
+        ELSE NULL
+    END AS DIPLOM,
+  IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) 
+WHERE v.lib='1A'),'01',IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) 
+WHERE v.lib in ('2A','Master MSP','Master STD','Master ES','Master Auditeur libre','MBD - Computer','MBD - Stat')),'02',IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) 
+WHERE v.lib='3A'),'03','')))
+ AS NIVEAU_A_COMPLETER_pr_CESURE_SCOLARITE_EXT,
+  '0027' AS SPECIA,  /*anglais*/
+  '' AS SPECIB,
+  '' AS SPECIC,
+  IF (substr(e.bea_ine,1,6)='07jz4q','Q',' ') AS REIMMA_A_VERIFIER,
+  e.annee_entree_enssupfr AS ANSUP_BLANC_QD_NON_RENSEIGNE,
+  e.concours_annee AS ANETAB,
+  IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) WHERE v.lib='Césure'),'',LEFT(TRIM(MID(e.code_postal_ville,7,LENGTH(e.code_postal_ville)-6)),32))
+  AS LCOMETU_VERIFIER_PBS_ACCENTS,
+  IF(e.id_etudiant IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v on (v.id_voie=ve.id_voie) WHERE v.lib='Césure'),'',LEFT(TRIM(MID(e.code_postal_ville,7,LENGTH(e.code_postal_ville)-6)),32))
+  AS LCOMREF_A_CORRIGER_EGAL_LCOMETU,
+  '' AS AMENA,
+CASE 
+        WHEN e.id_ref_cpge = '1' THEN '11201'
+        WHEN e.id_ref_cpge = '2' THEN '11202'
+        WHEN e.id_ref_cpge = 'è' THEN '11203'
+        WHEN e.id_ref_cpge = '4' THEN '11204'
+        WHEN e.id_ref_cpge = '5' THEN '11205'
+        WHEN e.id_ref_cpge = '6' THEN '11206'
+        WHEN e.id_ref_cpge = '8' THEN '12205'
+        WHEN e.id_ref_cpge = '11' THEN '13203'
+        WHEN e.id_ref_cpge = '12' THEN '11230'
+        ELSE NULL
+    END AS TYPREPA,
+  CASE LCASE(e.parent_qualite)
+    WHEN 'mere' THEN e.id_pcs_pere
+    WHEN 'mère' THEN e.id_pcs_pere
+    WHEN 'mére' THEN e.id_pcs_pere
+    WHEN 'mme' THEN e.id_pcs_pere
+    WHEN 'madame' THEN e.id_pcs_pere
+    ELSE e.id_pcs_mere
+  END AS PCSPAR2,
+  '' AS NUMED,
+  IF (e.libelle_statut_etudiant='attaché','K','') AS FONCTIO,
+  e.nom_famille AS NOM_FAM,
+  e.nom AS NOM_USA,
+  e.prenom AS PRENOM1,
+  SUBSTRING_INDEX(REPLACE(REPLACE(e.prenom_suite, ',', ' '), '  ', ' '), ' ', 1) AS PRENOM2,
+  CASE
+    WHEN LOCATE(' ', REPLACE(REPLACE(e.prenom_suite, ',', ' '), '  ', ' ')) > 0 THEN
+        SUBSTRING_INDEX(SUBSTRING_INDEX(REPLACE(REPLACE(e.prenom_suite, ',', ' '), '  ', ' '), ' ', 2), ' ', -1)
+    ELSE
+        ''
+END AS PRENOM3,
+  '' as LIEU_NAI,
+  e.vilnai as LIB_LNAI,
+  e.bac_departement as DEPBAC,
+  '' as EXOINS,
+  e.bac_spe1 as BAC_SPE1,
+  e.bac_spe2 as BAC_SPE2,
+  CONCAT('+', e.mobile_ref_indicatif_tel, ' ', e.mobile) AS NUMTEL,
+  e.courriel_perso as MAILP,
+  e.courriel as MAILETAB,
+  e.bac_lycee,
+  e.bac_ville,
+  e.bac_academie,
+  group_concat(v.lib) as VOIES,
+  commentaire AS CADRE_INFORMATION,
+  if (e.concours_annee='2015',UCASE(e.etab_origine_formation),' ') AS TYP_FORMATION
+
+FROM etudiant e
+LEFT JOIN nationalite nat ON (nat.id_nationalite=e.id_nationalite)
+LEFT JOIN academie aca ON (e.bac_academie=aca.libelle)
+INNER JOIN voie_etudiant ve ON (e.id_etudiant=ve.id_etudiant)
+INNER JOIN voie v ON (v.id_voie=ve.id_voie AND v.lib LIKE '%{voie}%')
+LEFT JOIN (SELECT id_etudiant FROM ensai_2014.etudiant WHERE temoin_etudiant=1) AS avant ON (e.id_etudiant=avant.id_etudiant)
+LEFT JOIN ref_serie_bac bac ON (bac.id_ref_serie_bac=e.id_ref_serie_bac)
+LEFT JOIN ref_situation_pre sp ON (sp.id_ref_situation_pre=e.id_ref_situation_pre)
+LEFT JOIN ref_cpge cc ON (cc.id_ref_cpge=e.id_ref_cpge)
+LEFT JOIN ref_dernier_diplome dd ON (dd.id_ref_dernier_diplome=e.id_ref_dernier_diplome)
+WHERE e.temoin_etudiant=1
+AND e.id_etudiant NOT IN (SELECT DISTINCT id_etudiant FROM voie_etudiant ve LEFT JOIN voie v ON (v.id_voie=ve.id_voie)
+WHERE 
+v.lib='!'
+OR v.lib='Report' 
+OR v.lib='Exclus' 
+OR v.lib='Elèves Invités'
+OR v.lib='démission'
+OR v.lib='3A sortant'
+OR v.lib='Attaché sortant'
+OR v.lib='Master sortant')
+/* ORDER BY e.id_etudiant; */
+group by e.id_etudiant
+order by voies,nom,prenom;
